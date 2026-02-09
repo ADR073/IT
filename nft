@@ -19,6 +19,9 @@ nft add table ip filter             # Add table
 nft add chain ip filter input       # Add chain
 nft add rule ip filter input accept # Add rule
 
+# Basic syntax
+nft add rule [family] [table] [chain] [matches] [statements]
+
 # Create basic IPv4 firewall
 table ip filter {
     # Define chains with their properties
