@@ -1,0 +1,50 @@
+# With nftables - one tool for everything
+nft add rule ip filter input tcp dport 22 accept
+nft add rule ip6 filter input tcp dport 22 accept
+nft add rule arp filter input ip saddr 1.2.3.4 accept
+nft add rule bridge filter input ether saddr 00:11:22:33:44:55 accept
+
+nftables Framework
+├── Tables (Container for chains)
+│   ├── Chains (Container for rules)
+│   │   ├── Rules (Filtering logic)
+│   │   └── Expressions (Match conditions)
+│   ├── Sets (Efficient data storage)
+│   └── Maps (Key-value lookups)
+└── Address Families (ip, ip6, inet, arp, bridge, netdev)
+
+# Examples:
+nft list ruleset                    # List everything
+nft add table ip filter             # Add table
+nft add chain ip filter input       # Add chain
+nft add rule ip filter input accept # Add rule
+
+# Create basic IPv4 firewall
+table ip filter {
+    # Define chains with their properties
+    chain input {
+        type filter hook input priority 0; policy drop;
+        
+        # Allow loopback
+        iif lo accept
+        
+        # Allow established connections
+        ct state established,related accept
+        
+        # Allow SSH
+        tcp dport 22 accept
+    }
+    
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+    }
+    
+    chain output {
+        type filter hook output priority 0; policy accept;
+    }
+}
+
+#NAT
+nft add table nat
+nft 'add chain nat postrouting { type nat hook postrouting priority 100 ; }'
+nft add rule nat postrouting masquerade
