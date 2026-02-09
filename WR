@@ -1,6 +1,7 @@
 GEN KEY: wg genkey | tee private.key | wg pubkey > public.key
 GEN PSK: wg genpsk > psk.key
-configure /etc/wireguard/wg0.conf
+
+SRV  Conf: configure /etc/wireguard/wg0.conf
 [interface]
 Address = 10.10.1.1/24
 PrivateKey = <srv_priv_key>
@@ -10,5 +11,17 @@ ListenPort = 51820
 PublicKey = <cli_pub_key>
 PreSharedKey = <psk>
 AllowedIPs = 10.10.1.2/32
+
+Cli Conf:
+[Interface]
+PrivateKey = <clave_privada_cliente>
+Address = 10.0.0.2/24
+DNS = 8.8.8.8
+
+[Peer]
+PublicKey = <clave_publica_servidor>
+Endpoint = <ip_publica_servidor>:51820
+AllowedIPs = 0.0.0.0/0
+PersistentKeepalive = 25
 
 start wg-quick up wg0; systemctl enable wg-quick@wg0
